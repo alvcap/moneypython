@@ -1,4 +1,5 @@
 import sys
+from copy import copy
 
 import requests
 
@@ -22,18 +23,25 @@ class ConverterGUI(QWidget):
         # Font
         fnt1 = QtGui.QFont("Helvetica", 20)
         fnt1.setBold(True)
+        fnt2 = QtGui.QFont("Helvetica", 15)
 
         # Labels
         lbl_fr = QLabel("From", self)
+        lbl_fr.setFont(fnt2)
         lbl_to = QLabel("To", self)
+        lbl_to.setFont(fnt2)
         lbl_it = QLabel("Introduce amount", self)
+        lbl_it.setFont(fnt2)
         self.lbl_result1 = QLabel(self)
         self.lbl_result2 = QLabel(self)
         # Combo boxes
         self.cb_fr = QComboBox(self)
-        self.cb_fr.addItems(currencies)
         self.cb_to = QComboBox(self)
-        self.cb_to.addItems(currencies)
+        self.cb_fr.addItems(currencies)
+        to_currencies = copy(currencies)
+        to_currencies.remove(self.cb_fr.currentText())
+        self.cb_to.addItems(to_currencies)
+        self.cb_fr.activated.connect(self.update_cb)
         # Line edit
         self.le = QLineEdit(self)
         self.le.setFocus()
@@ -42,22 +50,22 @@ class ConverterGUI(QWidget):
         btn_cnvrt = QPushButton('Convert', self)
         btn_cnvrt.clicked.connect(self.convert)
 
-        lbl_fr.move(20, 20)
-        self.cb_fr.move(20, 35)
-        lbl_to.move(20, 70)
-        self.cb_to.move(20, 85)
-        lbl_it.move(100, 20)
-        self.le.move(100, 35)
-        btn_cnvrt.move(100, 85)
-        self.lbl_result1.move(30, 140)
-        self.lbl_result2.move(30, 170)
+        lbl_fr.move(20, 15)
+        self.cb_fr.move(20, 30)
+        lbl_to.move(150, 15)
+        self.cb_to.move(150, 30)
+        lbl_it.move(20, 60)
+        self.le.move(20, 80)
+        btn_cnvrt.move(150, 75)
+        self.lbl_result1.move(30, 130)
+        self.lbl_result2.move(30, 160)
 
-        self.lbl_result1.resize(150, 20)
+        self.lbl_result1.resize(250, 20)
         self.lbl_result1.setFont(fnt1)
-        self.lbl_result2.resize(150, 20)
+        self.lbl_result2.resize(250, 20)
         self.lbl_result2.setFont(fnt1)
 
-        self.setGeometry(300, 200, 250, 200)
+        self.setGeometry(300, 200, 270, 200)
         self.setWindowTitle('Currency converter')
 
         self.show()
@@ -67,13 +75,30 @@ class ConverterGUI(QWidget):
         frm = self.cb_fr.currentText()
         to = self.cb_to.currentText()
 
-        amount = float(self.le.text())
+        try:
+            amount = float(self.le.text())
+        except:
+            self.lbl_result1.setText("Introduce number")
+            return
+
         rate = float(getrate(frm, to))
 
         converted = amount*rate
 
         self.lbl_result1.setText('%.2f'%amount + ' ' + frm)
         self.lbl_result2.setText('%.2f'%converted + ' ' + to)
+
+    def update_cb(self):
+        """
+        If item at one CB is changed, update the other so that it is not repeated
+        """
+        tochange = self.cb_to
+
+        remove = self.cb_fr.currentText()
+        new_currencies = copy(currencies)
+        new_currencies.remove(remove)
+        self.cb_to.clear()
+        self.cb_to.addItems(new_currencies)
 
 def getrate(frm, to):
 
