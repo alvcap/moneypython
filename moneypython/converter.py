@@ -4,7 +4,7 @@ from copy import copy
 import requests
 
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QApplication, QWidget, QComboBox, QPushButton, QLabel, QLineEdit
+from PyQt5.QtWidgets import QApplication, QWidget, QComboBox, QPushButton, QLabel, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout
 
 url = "http://api.fixer.io/latest?symbols={0},{1}"
 
@@ -34,6 +34,8 @@ class ConverterGUI(QWidget):
         lbl_it.setFont(fnt2)
         self.lbl_result1 = QLabel(self)
         self.lbl_result2 = QLabel(self)
+        self.lbl_result1.setFont(fnt1)
+        self.lbl_result2.setFont(fnt1)
         # Combo boxes
         self.cb_fr = QComboBox(self)
         self.cb_to = QComboBox(self)
@@ -50,23 +52,26 @@ class ConverterGUI(QWidget):
         btn_cnvrt = QPushButton('Convert', self)
         btn_cnvrt.clicked.connect(self.convert)
 
-        lbl_fr.move(20, 15)
-        self.cb_fr.move(20, 30)
-        lbl_to.move(150, 15)
-        self.cb_to.move(150, 30)
-        lbl_it.move(20, 60)
-        self.le.move(20, 80)
-        btn_cnvrt.move(150, 75)
-        self.lbl_result1.move(30, 130)
-        self.lbl_result2.move(30, 160)
+        vlayout = QVBoxLayout()
+        hlayout1 = QHBoxLayout()
+        hlayout2 = QHBoxLayout()
 
-        self.lbl_result1.resize(250, 20)
-        self.lbl_result1.setFont(fnt1)
-        self.lbl_result2.resize(250, 20)
-        self.lbl_result2.setFont(fnt1)
+        hlayout1.addWidget(lbl_fr)
+        hlayout1.addWidget(lbl_to)
+        hlayout2.addWidget(self.cb_fr)
+        hlayout2.addWidget(self.cb_to)
 
+        vlayout.addLayout(hlayout1)
+        vlayout.addLayout(hlayout2)
+        vlayout.addWidget(lbl_it)
+        vlayout.addWidget(self.le)
+        vlayout.addWidget(btn_cnvrt)
+        vlayout.addWidget(self.lbl_result1)
+        vlayout.addWidget(self.lbl_result2)
+
+        self.setLayout(vlayout)
         self.setGeometry(300, 200, 270, 200)
-        self.setWindowTitle('Currency converter')
+        self.setWindowTitle('moneypython')
 
         self.show()
 
