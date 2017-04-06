@@ -1,20 +1,25 @@
 import sys
 from copy import copy
+import json
 
 import requests
 
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QComboBox, QPushButton, QLabel, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout
 
-url = "http://api.fixer.io/latest?symbols={0},{1}"
+URL = "http://api.fixer.io/latest?symbols={0},{1}"
 
-currencies = ["EUR", "NOK", "USD", "MXN"]
+CURRENCIES = json.load(open("currencies.json", "r"))['currencies']
+
+from IPython import embed
+#embed()
 
 class ConverterGUI(QWidget):
 
     def __init__(self):
 
         super().__init__()
+        self.lands = [curr['land'] for curr in CURRENCIES]
 
         self.initUI()
 
@@ -39,11 +44,7 @@ class ConverterGUI(QWidget):
         # Combo boxes
         self.cb_fr = QComboBox(self)
         self.cb_to = QComboBox(self)
-        self.cb_fr.addItems(currencies)
-        to_currencies = copy(currencies)
-        to_currencies.remove(self.cb_fr.currentText())
-        self.cb_to.addItems(to_currencies)
-        self.cb_fr.activated.connect(self.update_cb)
+        self.set_combo_boxes()
         # Line edit
         self.le = QLineEdit(self)
         self.le.setFocus()
@@ -77,8 +78,14 @@ class ConverterGUI(QWidget):
 
     def convert(self):
 
-        frm = self.cb_fr.currentText()
-        to = self.cb_to.currentText()
+        frm_land = self.cb_fr.currentText()
+        to_land = self.cb_to.currentText()
+
+        for curr in CURRENCIES:
+            if frm_land == curr['land']:
+                frm = curr['currency']
+            if to_land == curr['land']:
+                to = curr['currency']
 
         try:
             amount = float(self.le.text())
@@ -93,6 +100,14 @@ class ConverterGUI(QWidget):
         self.lbl_result1.setText('%.2f'%amount + ' ' + frm)
         self.lbl_result2.setText('%.2f'%converted + ' ' + to)
 
+    def set_combo_boxes(self):
+
+        self.cb_fr.addItems(self.lands)
+        to_lands = copy(self.lands)
+        to_lands.remove(self.cb_fr.currentText())
+        self.cb_to.addItems(to_lands)
+        self.cb_fr.activated.connect(self.update_cb)
+
     def update_cb(self):
         """
         If item at one CB is changed, update the other so that it is not repeated
@@ -100,14 +115,14 @@ class ConverterGUI(QWidget):
         tochange = self.cb_to
 
         remove = self.cb_fr.currentText()
-        new_currencies = copy(currencies)
-        new_currencies.remove(remove)
+        new_lands = copy(self.lands)
+        new_lands.remove(remove)
         self.cb_to.clear()
-        self.cb_to.addItems(new_currencies)
+        self.cb_to.addItems(new_lands)
 
 def getrate(frm, to):
 
-    r = requests.get(url.format(frm, to))
+    r = requests.get(URL.format(frm, to))
     base = r.json()['base']
 
     if base == frm:

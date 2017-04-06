@@ -1,0 +1,20 @@
+{
+"currencies": [
+  {
+    "land":"europe",
+    "currency":"EUR"
+  },
+  {
+    "land":"norway",
+    "currency":"NOK"
+  },
+  {
+    "land":"USA",
+    "currency":"USD"
+  },
+  {
+    "land":"mexico",
+    "currency":"MXN"
+  }
+]
+}
