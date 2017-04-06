@@ -1,13 +1,14 @@
 from setuptools import setup
 
 setup(name="moneypython",
-      version="0.0.1",
+      version="0.0.2",
       description="Simple currency converter",
       author="alvcap",
       author_email="kape013@gmail.com",
       url='https://github.com/alvcap/moneypython',
       packages=["moneypython"],
       provides=["moneypython"],
+      package_data={'moneypython': ['currencies.json']},
       license="GNU General Public License v3",
 
       install_requires=["requests>=2.13.0"],

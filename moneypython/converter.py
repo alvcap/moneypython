@@ -1,6 +1,7 @@
 import sys
 from copy import copy
 import json
+from pkg_resources import resource_string
 
 import requests
 
@@ -9,10 +10,8 @@ from PyQt5.QtWidgets import QApplication, QWidget, QComboBox, QPushButton, QLabe
 
 URL = "http://api.fixer.io/latest?symbols={0},{1}"
 
-CURRENCIES = json.load(open("currencies.json", "r"))['currencies']
-
-from IPython import embed
-#embed()
+json_string = resource_string(__name__, "currencies.json").decode("utf-8")
+CURRENCIES = json.loads(json_string)['currencies']
 
 class ConverterGUI(QWidget):
 
