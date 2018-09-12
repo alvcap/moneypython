@@ -15,6 +15,10 @@
   {
     "land":"mexico",
     "currency":"MXN"
+  },
+  {
+    "land":"UK",
+    "currency":"GBP"
   }
 ]
 }

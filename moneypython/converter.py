@@ -1,6 +1,7 @@
 import sys
-from copy import copy
 import json
+from copy import copy
+from datetime import date
 from pkg_resources import resource_string
 
 import requests
@@ -8,7 +9,7 @@ import requests
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication, QWidget, QComboBox, QPushButton, QLabel, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout
 
-URL = "http://api.fixer.io/latest?symbols={0},{1}"
+URL = "https://www.currency-api.com/rates?base={0}&date={1}&symbols={2}"
 
 json_string = resource_string(__name__, "currencies.json").decode("utf-8")
 CURRENCIES = json.loads(json_string)['currencies']
@@ -120,8 +121,9 @@ class ConverterGUI(QWidget):
         self.cb_to.addItems(new_lands)
 
 def getrate(frm, to):
+    today = date.today().isoformat()
 
-    r = requests.get(URL.format(frm, to))
+    r = requests.get(URL.format(frm, today, to))
     base = r.json()['base']
 
     if base == frm:
